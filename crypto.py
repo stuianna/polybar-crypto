@@ -5,17 +5,34 @@ import sys
 import requests
 from decimal import Decimal
 
+#Change this to the full path of your crypto-config file if necessary
+configFile = '/home/<user>/.config/polybar/crypto-config'
+
 config = configparser.ConfigParser()
 
 # File must be opened with utf-8 explicitly
-with open('crypto-config', 'r', encoding='utf-8') as f:
+with open(configFile, 'r', encoding='utf-8') as f:
 	config.read_file(f)
 
 # Everything except the general section
 currencies = [x for x in config.sections() if x != 'general']
 base_currency = config['general']['base_currency']
 params = {'convert': base_currency}
+mode = config['general']['mode']
 
+if mode == 'cyclic':
+
+    currentTicker = config['general']['ticker']
+    newIndex = currencies.index(currentTicker) + 1
+    config.set('general','ticker',currencies[newIndex % len(currencies)])
+    currencies = [currentTicker]
+    with open(configFile, 'w', encoding='utf-8') as f:
+        config.write(f)
+
+elif mode == 'all':
+    pass
+else:
+    pass
 
 for currency in currencies:
         icon = config[currency]['icon']
@@ -33,8 +50,8 @@ for currency in currencies:
 
         display_opt = config['general']['display']
         if display_opt == 'both' or display_opt == None:
-            sys.stdout.write(f'{icon} {local_price}/{change_24:+}%  ')
+            sys.stdout.write(f'{icon}: {local_price} ({change_24:+}%)')
         elif display_opt == 'percentage':
-            sys.stdout.write(f'{icon} {change_24:+}%  ')
+            sys.stdout.write(f'{icon}: {change_24:+}%')
         elif display_opt == 'price':
-            sys.stdout.write(f'{icon} {local_price}  ')
+            sys.stdout.write(f'{icon}: {local_price}')
