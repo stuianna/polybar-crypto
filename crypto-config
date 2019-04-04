@@ -1,15 +1,12 @@
 [general]
-base_currency = NZD
-display = price
+base_currency = AUD
+display = both
+mode = cyclic
+ticker = ethereum
 
 [bitcoin]
-icon = 
-
-[litecoin]
-icon = 
-
-[ardor]
-icon = 
+icon = BTC
 
 [ethereum]
-icon = 
+icon = ETH
+
